@@ -8,13 +8,13 @@
         public Address Address { get; set; } //owned ayrı bir tablo içerisinde olmayacak
         public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
         public OrderStatus Status { get; set; }
-        public string FailMessage { get; set; }
+        public string? FailMessage { get; set; }
 
     }
     public enum OrderStatus
     {
         Suspend,
-        Success,
+        Complete,
         Fail
     }
 }

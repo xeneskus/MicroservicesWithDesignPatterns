@@ -1,3 +1,6 @@
+using MassTransit;
+using Payment.API.Consumers;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,6 +10,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<StockReservedEventConsumer>();
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration.GetConnectionString("RabbitMQ"));
+
+        cfg.ReceiveEndpoint(Shared.RabbitMQSettingsConst.StockReservedEventQueueName, e => //stockta zaten oluþturmuþtuk kuyruk onu kullandýk
+        {
+            e.ConfigureConsumer<StockReservedEventConsumer>(context);//hangi consumer dinleyeceðini belirttik
+        });//sub olduk
+    });
+});
+
+builder.Services.AddMassTransitHostedService();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
