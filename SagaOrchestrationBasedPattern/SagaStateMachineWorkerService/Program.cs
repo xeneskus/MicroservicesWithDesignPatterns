@@ -3,9 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using SagaOrchestrationBasedPattern.SagaStateMachineWorkerService.Models;
 using SagaOrchestrationBasedPattern.Shared;
 using SagaStateMachineWorkerService;
+using SagaStateMachineWorkerService.Models;
 using System.Reflection;
 
-Microsoft.Extensions.Hosting.IHost host = Host.CreateDefaultBuilder(args)
+IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
         var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
@@ -38,7 +39,6 @@ Microsoft.Extensions.Hosting.IHost host = Host.CreateDefaultBuilder(args)
 
 
 
-        services.AddMassTransitHostedService();
         services.AddHostedService<Worker>();
     })
     .Build();

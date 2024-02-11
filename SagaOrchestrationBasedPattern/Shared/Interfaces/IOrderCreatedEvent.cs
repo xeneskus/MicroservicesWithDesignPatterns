@@ -1,6 +1,8 @@
-﻿namespace SagaOrchestrationBasedPattern.Shared.Interfaces
+﻿using MassTransit;
+
+namespace SagaOrchestrationBasedPattern.Shared.Interfaces
 {
-    public interface IOrderCreatedEvent /*: CorrelatedBy<Guid>*/
+    public interface IOrderCreatedEvent : CorrelatedBy<Guid>
     {
         List<OrderItemMessage> OrderItems { get; set; }
     }

@@ -1,5 +1,7 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+
+using SagaOrchestrationBasedPattern.Order.API.Consumers;
 using SagaOrchestrationBasedPattern.Order.API.Models;
 using SagaOrchestrationBasedPattern.Shared;
 
@@ -14,26 +16,26 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMassTransit(x =>
 {
-    //x.AddConsumer<OrderRequestCompletedEventConsumer>();
-    //x.AddConsumer<OrderRequestFailedEventConsumer>();
+    x.AddConsumer<OrderRequestCompletedEventConsumer>();
+    x.AddConsumer<OrderRequestFailedEventConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration.GetConnectionString("RabbitMQ"));
 
-        //cfg.ReceiveEndpoint(RabbitMQSettingsConst.OrderRequestCompletedEventtQueueName, x =>
-        //{
-        //    x.ConfigureConsumer<OrderRequestCompletedEventConsumer>(context);
-        //});
+        cfg.ReceiveEndpoint(RabbitMQSettingsConst.OrderRequestCompletedEventtQueueName, x =>
+        {
+            x.ConfigureConsumer<OrderRequestCompletedEventConsumer>(context);
+        });
 
-        //cfg.ReceiveEndpoint(RabbitMQSettingsConst.OrderRequestFailedEventtQueueName, x =>
-        //{
-        //    x.ConfigureConsumer<OrderRequestFailedEventConsumer>(context);
-        //});
+        cfg.ReceiveEndpoint(RabbitMQSettingsConst.OrderRequestFailedEventtQueueName, x =>
+        {
+            x.ConfigureConsumer<OrderRequestFailedEventConsumer>(context);
+        });
     });
 });
 
-builder.Services.AddMassTransitHostedService();
+//builder.Services.AddMassTransitHostedService();
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>

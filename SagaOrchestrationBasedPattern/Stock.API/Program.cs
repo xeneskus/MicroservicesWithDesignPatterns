@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using SagaOrchestrationBasedPattern.Shared;
+using SagaOrchestrationBasedPattern.Stock.API.Consumers;
 using SagaOrchestrationBasedPattern.Stock.API.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,22 +20,23 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddMassTransit(x =>
 {
-    //x.AddConsumer<OrderCreatedEventConsumer>();
-    //x.AddConsumer<StockRollBackMessageConsumer>();
+    x.AddConsumer<OrderCreatedEventConsumer>();
+    x.AddConsumer<StockRollBackMessageConsumer>();
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration.GetConnectionString("RabbitMQ"));
 
         cfg.ReceiveEndpoint(RabbitMQSettingsConst.StockOrderCreatedEventQueueName, e =>
         {
-            //e.ConfigureConsumer<OrderCreatedEventConsumer>(context);//hangi consumer dinleyeceðini belirttik
+            e.ConfigureConsumer<OrderCreatedEventConsumer>(context);//hangi consumer dinleyeceðini belirttik
         });//sub olduk
-        //cfg.ReceiveEndpoint(Shared.RabbitMQSettingsConst.StockRollBackMessageQueueName, e =>
-        //{
-        //    e.ConfigureConsumer<StockRollBackMessageConsumer>(context);
-        //});
+        cfg.ReceiveEndpoint(RabbitMQSettingsConst.StockRollBackMessageQueueName, e =>
+        {
+            e.ConfigureConsumer<StockRollBackMessageConsumer>(context);
+        });
     });
 });
+//builder.Services.AddMassTransitHostedService();
 
 
 var app = builder.Build();
